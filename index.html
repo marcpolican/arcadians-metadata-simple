@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+                type="application/javascript"></script>
+        <script>
+            // Connect to metamask and get the wallet address
+            async function initEthereum() {
+                const provider = new ethers.providers.Web3Provider( window.ethereum, "any");
+                await provider.send("eth_requestAccounts", []);
+                const signer = provider.getSigner();
+
+                let wallet = await signer.getAddress();
+                document.getElementById("wallet").innerText =
+                    "Your wallet is " + wallet;
+            }
+
+            // Query Arcadian metadata with a certain token id
+            async function queryArcadian() {
+
+                // some error checking
+                var input = document.getElementById("tokenId");
+                if (input == null || input.value == "") return;
+
+                // this is the same url that you get from querying token uri from the contract
+                var url = "https://api.arcadians.io/" + input.value;
+
+                // create a GET request
+                var xhr = new XMLHttpRequest();
+                xhr.onload = () => {
+                    if (xhr.readyState === xhr.DONE) {
+                        if (xhr.status === 200) {
+                            var data = JSON.parse(xhr.response);
+
+                            // Show the Arcadian image
+                            var img = document.getElementById("arcImage");
+                            img.src = data.image;
+
+                            // Show the metadata json
+                            var metadata = document.getElementById("arcMetadata").innerText = 
+                                JSON.stringify(data, null, 2);
+
+                        }
+                    }
+                };
+                xhr.open("GET", url);
+                xhr.send();
+            }
+        </script>
+    </head>
+    <body>
+        <h2>Connect wallet</h2>
+        <button type="button" onclick="initEthereum()">Connect Wallet</button>
+        <br>
+        <div id="wallet"></div>
+        <hr>
+        <h2>Query Arcadian by Token ID</h2>
+        <label for="tokenId">Token ID: </label><input type="number" id="tokenId">
+        <button type="button" onclick="queryArcadian()">Go</button>
+        <br>
+        <br>
+        <img id="arcImage">
+        <br>
+        <pre id="arcMetadata"></pre>
+    </body>
+</html>
+
