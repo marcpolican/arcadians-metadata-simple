@@ -104,7 +104,7 @@ async function drawOnCanvas() {
     ctx.msImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
 
-    var drawOrder = ["skin", "top", "bottom", "eyes", "mouth", "head", "left-hand", "right-hand"];
+    var drawOrder = ["shadow", "skin", "top", "bottom", "eyes", "mouth", "head", "left-hand", "right-hand"];
 
     var scale = 3;
     for (let d of drawOrder) {
