@@ -10,7 +10,7 @@ async function initEthereum() {
         "Your wallet is " + wallet;
 }
 
-const partsUrl = "https://nftstorage.link/ipfs/bafybeib2ir3zpgd3cmizcv7shekjeftcwq7apjib6i5gz2sjc4vajwtgiy"
+const partsUrl = "https://nftstorage.link/ipfs/bafybeihefravd4uvgia4zuja3puub2sfzmox3trgw6plyaa3salprlpgjy"
 var gender = "female";
 var parts = {};
 var requestCount = 0;
@@ -54,7 +54,7 @@ async function queryArcadian() {
 
                     // skip these things
                     if (pv == "none") continue;
-                    if (pn == "background" || pn == "pet") continue;
+                    if (pn == "background") continue;
 
                     if (pn == "class") {
                         if (pv.indexOf("female") < 0)
@@ -64,10 +64,12 @@ async function queryArcadian() {
 
                     requestCount++;
                     var img = new Image();
-                    img.src = `${partsUrl}/${gender}/${pn}/${pv}.png`;
-                    img.addEventListener('load', () => {
-                        requestCount--;
-                    }, false);
+
+                    if (pn == "pet") img.src = `${partsUrl}/${pn}/${pv}.png`;
+                    else             img.src = `${partsUrl}/${gender}/${pn}/${pv}.png`;
+
+                    img.addEventListener('load', () => { requestCount--; }, false);
+                    img.addEventListener('error', () => { requestCount--; }, false);
 
                     parts[pn] = img;
                     setTimeout(waitForParts, 500);
@@ -104,18 +106,21 @@ async function drawOnCanvas() {
     ctx.msImageSmoothingEnabled = false;
     ctx.imageSmoothingEnabled = false;
 
-    var drawOrder = ["shadow", "skin", "top", "bottom", "eyes", "mouth", "head", "left-hand", "right-hand"];
+    var drawOrder = ["shadow", "skin", "top", "bottom", "eyes", "mouth", "head", "left-hand", "right-hand", "pet"];
 
-    var scale = 3;
     for (let d of drawOrder) {
         var p = parts[d];
         if (p != null) ctx.drawImage(p,0,0);
     }
 
-    var scale = 3;
+    var scale = 1.0/3.0;
     for (let d of drawOrder) {
         var p = parts[d];
-        if (p != null) ctx.drawImage(p,0,0,p.width*scale,p.height*scale);
+        if (p != null) 
+        {
+            ctx.drawImage(p,0,0,p.width,p.height, 
+                            0,0,p.width*scale,p.height*scale);
+        }
     }
 }
 
